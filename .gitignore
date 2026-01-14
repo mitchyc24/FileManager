@@ -43,5 +43,5 @@ instance/
 .DS_Store
 Thumbs.db
 
-# Managed files directory (can be uncommented if you don't want to track managed files)
-# managed_files/
+# Managed files directory (sample files for testing purposes)
+managed_files/

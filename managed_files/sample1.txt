@@ -1,2 +1,0 @@
-This is a sample text file for testing the FileManager application.
-It contains some basic information about the project.
