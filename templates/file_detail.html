@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}{{ file['filename'] }} - FileManager{% endblock %}
+
+{% block content %}
+<div class="file-detail">
+    <div class="detail-header">
+        <h2>{{ file['filename'] }}</h2>
+        <div class="actions">
+            <a href="{{ url_for('open_file', file_id=file['id']) }}" class="btn btn-success">🗁 Open File</a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to List</a>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-main">
+            <div class="card">
+                <h3>File Information</h3>
+                <table class="info-table">
+                    <tr>
+                        <th>Path:</th>
+                        <td>{{ file['filepath'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Size:</th>
+                        <td>{{ (file['file_size'] / 1024) | round(2) }} KB</td>
+                    </tr>
+                    <tr>
+                        <th>Modified:</th>
+                        <td>{{ file['file_modified'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Indexed:</th>
+                        <td>{{ file['indexed_at'] }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Notes</h3>
+                <form action="{{ url_for('update_notes', file_id=file['id']) }}" method="post">
+                    <textarea name="notes" 
+                              class="notes-textarea" 
+                              rows="6" 
+                              placeholder="Add notes about this file...">{{ file['notes'] or '' }}</textarea>
+                    <button type="submit" class="btn btn-primary">Save Notes</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="detail-sidebar">
+            <div class="card">
+                <h3>Tags</h3>
+                
+                <div class="current-tags">
+                    {% if file['tags'] %}
+                        {% for tag in file['tags'] %}
+                            <div class="tag-item">
+                                <span class="tag">{{ tag['tag_name'] }}</span>
+                                <form action="{{ url_for('remove_tag', file_id=file['id'], tag_id=tag['id']) }}" 
+                                      method="post" 
+                                      style="display: inline;">
+                                    <button type="submit" class="btn-remove">×</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-tags">No tags yet</p>
+                    {% endif %}
+                </div>
+
+                <form action="{{ url_for('add_tag', file_id=file['id']) }}" 
+                      method="post" 
+                      class="add-tag-form">
+                    <input type="text" 
+                           name="tag_name" 
+                           placeholder="Add new tag..." 
+                           class="tag-input"
+                           required>
+                    <button type="submit" class="btn btn-primary">Add Tag</button>
+                </form>
+
+                {% if all_tags %}
+                <div class="suggested-tags">
+                    <h4>Suggested Tags:</h4>
+                    {% for tag in all_tags %}
+                        {% if tag not in file['tags'] %}
+                            <form action="{{ url_for('add_tag', file_id=file['id']) }}" 
+                                  method="post" 
+                                  style="display: inline;">
+                                <input type="hidden" name="tag_name" value="{{ tag['tag_name'] }}">
+                                <button type="submit" class="tag tag-suggestion">+ {{ tag['tag_name'] }}</button>
+                            </form>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="header">
+        <h2>File Dashboard</h2>
+        <p class="subtitle">{{ files|length }} files in directory</p>
+    </div>
+
+    <div class="search-section">
+        <form action="{{ url_for('search') }}" method="get" class="search-form">
+            <div class="search-input-group">
+                <input type="text" 
+                       name="q" 
+                       placeholder="Search files by name or notes..." 
+                       value="{{ search_query or '' }}"
+                       class="search-input">
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if search_query or selected_tags %}
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+
+        {% if all_tags %}
+        <div class="tag-filter">
+            <h3>Filter by Tags:</h3>
+            <div class="tag-list">
+                {% for tag in all_tags %}
+                    <a href="{{ url_for('search', tags=tag['tag_name']) }}" 
+                       class="tag {% if tag['tag_name'] in selected_tags %}tag-active{% endif %}">
+                        {{ tag['tag_name'] }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="file-list">
+        {% if files %}
+            <table class="file-table">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Size</th>
+                        <th>Modified</th>
+                        <th>Tags</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                    <tr>
+                        <td class="filename">
+                            <a href="{{ url_for('file_detail', file_id=file['id']) }}">
+                                {{ file['filename'] }}
+                            </a>
+                        </td>
+                        <td>{{ (file['file_size'] / 1024) | round(2) }} KB</td>
+                        <td>{{ file['file_modified'] }}</td>
+                        <td>
+                            <div class="tag-list-inline">
+                                {% for tag in file['tags'] %}
+                                    <span class="tag tag-small">{{ tag['tag_name'] }}</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('file_detail', file_id=file['id']) }}" class="btn btn-small">View</a>
+                            <a href="{{ url_for('open_file', file_id=file['id']) }}" class="btn btn-small btn-success">Open</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <p>No files found.</p>
+                <p>Add files to <strong>{{ managed_dir }}</strong> and click "Refresh Index".</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
