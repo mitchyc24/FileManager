@@ -30,8 +30,7 @@
                 <p><strong>Selected Tags:</strong></p>
                 <div class="tag-list">
                     {% for tag_name in selected_tags %}
-                        {% set new_tags = selected_tags | list %}
-                        {% set _ = new_tags.remove(tag_name) %}
+                        {% set new_tags = selected_tags | reject('equalto', tag_name) | list %}
                         <a href="{{ url_for('search', tags=new_tags, q=search_query) }}" 
                            class="tag tag-active">
                             {{ tag_name }} ✕
