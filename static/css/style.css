@@ -139,6 +139,23 @@ body {
     margin-bottom: 0.5rem;
 }
 
+.tag-filter p {
+    font-size: 0.9rem;
+    color: #2c3e50;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.tag-filter .selected-tags {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.tag-filter .selected-tags p {
+    margin-top: 0;
+}
+
 .tag-list {
     display: flex;
     flex-wrap: wrap;
