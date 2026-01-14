@@ -119,6 +119,17 @@ def open_file(file_id):
     
     full_path = indexer.get_full_path(file['filepath'])
     
+    # Security: Validate that the file path is within the managed directory
+    try:
+        real_path = os.path.realpath(full_path)
+        managed_dir = os.path.realpath(Config.MANAGED_DIRECTORY)
+        if not real_path.startswith(managed_dir):
+            flash('Access denied: File is outside managed directory', 'error')
+            return redirect(url_for('file_detail', file_id=file_id))
+    except Exception:
+        flash('Invalid file path', 'error')
+        return redirect(url_for('file_detail', file_id=file_id))
+    
     if not os.path.exists(full_path):
         flash('File does not exist on disk', 'error')
         return redirect(url_for('file_detail', file_id=file_id))
@@ -152,4 +163,7 @@ def api_files():
     return jsonify([dict(f) for f in files])
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    # Debug mode should only be enabled in development
+    # Set FLASK_DEBUG=1 environment variable to enable debug mode
+    debug_mode = os.environ.get('FLASK_DEBUG', '0') == '1'
+    app.run(debug=debug_mode, host='127.0.0.1', port=5000)

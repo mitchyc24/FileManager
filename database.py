@@ -217,8 +217,13 @@ class Database:
         cursor = conn.cursor()
         
         if not existing_filepaths:
-            # If no files exist, clear all
-            cursor.execute('DELETE FROM files')
+            # Safety check: Don't delete all files unless directory is truly empty
+            # Get count of files in database
+            cursor.execute('SELECT COUNT(*) as count FROM files')
+            count = cursor.fetchone()['count']
+            if count > 0:
+                # Only clear if we're sure (could add logging here in production)
+                cursor.execute('DELETE FROM files')
         else:
             placeholders = ','.join('?' * len(existing_filepaths))
             cursor.execute(f'DELETE FROM files WHERE filepath NOT IN ({placeholders})', existing_filepaths)

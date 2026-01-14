@@ -36,6 +36,17 @@ pip install -r requirements.txt
 python app.py
 ```
 
+For development with debug mode enabled:
+```bash
+# Windows
+set FLASK_DEBUG=1
+python app.py
+
+# Linux/Mac
+export FLASK_DEBUG=1
+python app.py
+```
+
 2. **Access the web interface**:
 Open your browser and navigate to `http://127.0.0.1:5000`
 
