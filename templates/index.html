@@ -25,12 +25,30 @@
         {% if all_tags %}
         <div class="tag-filter">
             <h3>Filter by Tags:</h3>
+            {% if selected_tags %}
+            <div class="selected-tags">
+                <p><strong>Selected Tags:</strong></p>
+                <div class="tag-list">
+                    {% for tag_name in selected_tags %}
+                        {% set new_tags = selected_tags | reject('equalto', tag_name) | list %}
+                        <a href="{{ url_for('search', tags=new_tags, q=search_query) }}" 
+                           class="tag tag-active">
+                            {{ tag_name }} ✕
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            <p><strong>Available Tags:</strong></p>
             <div class="tag-list">
                 {% for tag in all_tags %}
-                    <a href="{{ url_for('search', tags=tag['tag_name']) }}" 
-                       class="tag {% if tag['tag_name'] in selected_tags %}tag-active{% endif %}">
-                        {{ tag['tag_name'] }}
-                    </a>
+                    {% if tag['tag_name'] not in selected_tags %}
+                        {% set new_tags = (selected_tags or []) + [tag['tag_name']] %}
+                        <a href="{{ url_for('search', tags=new_tags, q=search_query) }}" 
+                           class="tag">
+                            {{ tag['tag_name'] }}
+                        </a>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>

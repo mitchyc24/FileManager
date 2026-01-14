@@ -121,16 +121,18 @@ class Database:
         cursor = conn.cursor()
         
         if tags and len(tags) > 0:
-            # Search by tags
+            # Search by tags - files must have ALL specified tags (AND logic)
             placeholders = ','.join('?' * len(tags))
             query_sql = f'''
                 SELECT DISTINCT f.* FROM files f
                 INNER JOIN file_tags ft ON f.id = ft.file_id
                 INNER JOIN tags t ON ft.tag_id = t.id
                 WHERE t.tag_name IN ({placeholders})
+                GROUP BY f.id
+                HAVING COUNT(DISTINCT t.tag_name) = ?
                 ORDER BY f.filename
             '''
-            cursor.execute(query_sql, tags)
+            cursor.execute(query_sql, tags + [len(tags)])
         elif query:
             # Search by filename or notes
             cursor.execute('''
